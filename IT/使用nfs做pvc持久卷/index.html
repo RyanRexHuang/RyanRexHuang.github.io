@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>使用nfs做pvc持久卷 // Aurora</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.78.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Ryan" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ryanrexhuang.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用nfs做pvc持久卷"/>
+<meta name="twitter:description" content="使用nfs做pvc持久卷 安装nfs软件  ps：挑选一台服务器做NFS服务器，NFS服务器和k8s集群都需要安装NFS和RPCBIND，否则k8s集群中机器不能远程挂载，集群不能使用pvc
+ yum -y install nfs-utils rpcbind mkdir -pv /ifs/kubernetes systemctl enable rpcbind systemctl enable nfs vim /etc/exports /ifs/kubernetes *(rw,no_root_squash) exportfs -r mkdir -pv /ifs/kubernetes/{pv00001,pv00002,pv00003} 找一台机子测试一下 mount -t nfs 10.1.1.201:/ifs/kubernetes /mnt/ NFS静态分配pv kubectl apply -f pv.yaml
+apiVersion: v1 kind: PersistentVolume metadata: name: pv00001 spec: capacity: storage: 5Gi accessModes: - ReadWriteMany nfs: path: /ifs/kubernetes/pv00001 server: 10.1.1.201 --- apiVersion: v1 kind: PersistentVolume metadata: name: pv00002 spec: capacity: storage: 10Gi accessModes: - ReadWriteMany nfs: path: /ifs/kubernetes/pv00002 server: 10."/>
+
+    <meta property="og:title" content="使用nfs做pvc持久卷" />
+<meta property="og:description" content="使用nfs做pvc持久卷 安装nfs软件  ps：挑选一台服务器做NFS服务器，NFS服务器和k8s集群都需要安装NFS和RPCBIND，否则k8s集群中机器不能远程挂载，集群不能使用pvc
+ yum -y install nfs-utils rpcbind mkdir -pv /ifs/kubernetes systemctl enable rpcbind systemctl enable nfs vim /etc/exports /ifs/kubernetes *(rw,no_root_squash) exportfs -r mkdir -pv /ifs/kubernetes/{pv00001,pv00002,pv00003} 找一台机子测试一下 mount -t nfs 10.1.1.201:/ifs/kubernetes /mnt/ NFS静态分配pv kubectl apply -f pv.yaml
+apiVersion: v1 kind: PersistentVolume metadata: name: pv00001 spec: capacity: storage: 5Gi accessModes: - ReadWriteMany nfs: path: /ifs/kubernetes/pv00001 server: 10.1.1.201 --- apiVersion: v1 kind: PersistentVolume metadata: name: pv00002 spec: capacity: storage: 10Gi accessModes: - ReadWriteMany nfs: path: /ifs/kubernetes/pv00002 server: 10." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ryanrexhuang.github.io/it/%E4%BD%BF%E7%94%A8nfs%E5%81%9Apvc%E6%8C%81%E4%B9%85%E5%8D%B7/" />
+<meta property="article:published_time" content="2020-06-20T16:49:45+08:00" />
+<meta property="article:modified_time" content="2020-06-20T16:49:45+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ryanrexhuang.github.io/"><img class="app-header-avatar" src="/avatar.png" alt="Ryan" /></a>
+      <h1>Aurora</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/categories/">Categories</a>
+            <br>
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Nothing is ture, Everything is permitted.</p>
+      <div class="app-header-social">
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">使用nfs做pvc持久卷</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 20, 2020
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ryanrexhuang.github.io/tags/linux/">Linux</a>
+              <a class="tag" href="https://ryanrexhuang.github.io/tags/nfs/">nfs</a>
+              <a class="tag" href="https://ryanrexhuang.github.io/tags/pvc/">pvc</a>
+              <a class="tag" href="https://ryanrexhuang.github.io/tags/k8s/">k8s</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h2 id="使用nfs做pvc持久卷">使用nfs做pvc持久卷</h2>
+<h3 id="安装nfs软件">安装nfs软件</h3>
+<blockquote>
+<p>ps：挑选一台服务器做NFS服务器，NFS服务器和k8s集群都需要安装NFS和RPCBIND，否则k8s集群中机器不能远程挂载，集群不能使用pvc</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum -y install nfs-utils rpcbind
+mkdir -pv /ifs/kubernetes
+systemctl enable rpcbind
+systemctl enable nfs
+
+vim /etc/exports
+/ifs/kubernetes *<span style="color:#f92672">(</span>rw,no_root_squash<span style="color:#f92672">)</span>
+
+exportfs -r
+ mkdir -pv /ifs/kubernetes/<span style="color:#f92672">{</span>pv00001,pv00002,pv00003<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="找一台机子测试一下">找一台机子测试一下</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mount -t nfs 10.1.1.201:/ifs/kubernetes /mnt/
+</code></pre></div><h3 id="nfs静态分配pv">NFS静态分配pv</h3>
+<p>kubectl apply -f pv.yaml</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv00001
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /ifs/kubernetes/pv00001
+    server: 10.1.1.201
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv00002
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /ifs/kubernetes/pv00002
+    server: 10.1.1.201
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv00003
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /ifs/kubernetes/pv00003
+    server: 10.1.1.201
+</code></pre><p>kubectl apply -f deployment-pvc.yaml</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - image: nginx:1.18.0
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: my-pvc
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  #annotations:
+    #traefik.ingress.kubernetes.io/load-balancer-method: drr
+spec:
+  template:
+    metadata:
+      labels:
+        name: web
+        namespace: default
+spec:
+  selector:
+    app: web
+  ports:
+  - name: web
+    port: 80
+    targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: web
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: web.ryan.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: web
+          servicePort: web
+</code></pre><h3 id="动态分配pv">动态分配pv</h3>
+<blockquote>
+<p>需要先安装一个nfs-client-provisioner插件</p>
+<p>nfs-client.yaml</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+---
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1 </span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">1</span>
+  <span style="color:#f92672">strategy</span>:
+    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">Recreate</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">matchLabels</span>:
+      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+  <span style="color:#f92672">template</span>:
+    <span style="color:#f92672">metadata</span>:
+      <span style="color:#f92672">labels</span>:
+        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+    <span style="color:#f92672">spec</span>:
+      <span style="color:#f92672">serviceAccountName</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+      <span style="color:#f92672">containers</span>:
+        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+          <span style="color:#f92672">image</span>: <span style="color:#ae81ff">quay.io/external_storage/nfs-client-provisioner:latest</span>
+          <span style="color:#f92672">volumeMounts</span>:
+            - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nfs-client-root</span>
+              <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/persistentvolumes</span>
+          <span style="color:#f92672">env</span>:
+            - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">PROVISIONER_NAME</span>
+              <span style="color:#f92672">value</span>: <span style="color:#ae81ff">fuseim.pri/ifs</span>
+            - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">NFS_SERVER</span>
+              <span style="color:#f92672">value</span>: <span style="color:#ae81ff">192.168.187.133</span> 
+            - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">NFS_PATH</span>
+              <span style="color:#f92672">value</span>: <span style="color:#ae81ff">/ifs/kubernetes</span>
+      <span style="color:#f92672">volumes</span>:
+        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nfs-client-root</span>
+          <span style="color:#f92672">nfs</span>:
+            <span style="color:#f92672">server</span>: <span style="color:#ae81ff">192.168.187.133</span>
+            <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/ifs/kubernetes</span>
+</code></pre></div></blockquote>
+<p>生产动态存储卷
+kubectl apply -f class.yaml</p>
+<pre><code>apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: managed-nfs-storage
+provisioner: fuseim.pri/ifs # or choose another name, must match deployment's env PROVISIONER_NAME'
+parameters:
+  archiveOnDelete: &quot;true&quot;
+</code></pre><p>生成pods,kubectl apply -f deployment.yaml</p>
+<pre><code>apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-client-provisioner
+---
+kind: Deployment
+apiVersion: apps/v1 
+metadata:
+  name: nfs-client-provisioner
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: fuseim.pri/ifs
+            - name: NFS_SERVER
+              value: 10.1.1.201
+            - name: NFS_PATH
+              value: /ifs/kubernetes
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 10.1.1.201
+            path: /ifs/kubernetes
+</code></pre><p>赋权kubectl apply -f rbac.yaml</p>
+<pre><code>kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: nfs-client-provisioner
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-client-provisioner-runner
+rules:
+  - apiGroups: [&quot;&quot;]
+    resources: [&quot;persistentvolumes&quot;]
+    verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;delete&quot;]
+  - apiGroups: [&quot;&quot;]
+    resources: [&quot;persistentvolumeclaims&quot;]
+    verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;update&quot;]
+  - apiGroups: [&quot;storage.k8s.io&quot;]
+    resources: [&quot;storageclasses&quot;]
+    verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;]
+  - apiGroups: [&quot;&quot;]
+    resources: [&quot;events&quot;]
+    verbs: [&quot;create&quot;, &quot;update&quot;, &quot;patch&quot;]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: run-nfs-client-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: nfs-client-provisioner-runner
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: leader-locking-nfs-client-provisioner
+rules:
+  - apiGroups: [&quot;&quot;]
+    resources: [&quot;endpoints&quot;]
+    verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: leader-locking-nfs-client-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    # replace with namespace where provisioner is deployed
+    namespace: default
+roleRef:
+  kind: Role
+  name: leader-locking-nfs-client-provisioner
+  apiGroup: rbac.authorization.k8s.io
+</code></pre><p>最后自动创建存储卷，只要把上面的静态存储加一条命令即可。</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  storageClassName: &quot;managed-nfs-storage&quot;
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - image: nginx:1.18.0
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: my-pvc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  #annotations:
+    #traefik.ingress.kubernetes.io/load-balancer-method: drr
+spec:
+  template:
+    metadata:
+      labels:
+        name: web                                                                    
+        namespace: default
+spec:
+  selector:
+    app: web
+  ports:
+  - name: web
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: web
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: web.ryan.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: web
+          servicePort: web
+</code></pre><p>动态生成成功
+<img src="%E4%BD%BF%E7%94%A8nfs%E5%81%9Apvc%E6%8C%81%E4%B9%85%E5%8D%B7.assets/4f3bbd904d35a6ffa3285793ceafffd6.png" alt="K8S监控之普罗米修斯"></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

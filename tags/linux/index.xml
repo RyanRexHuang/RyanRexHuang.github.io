@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on Aurora</title>
+    <link>https://ryanrexhuang.github.io/tags/linux/</link>
+    <description>Recent content in Linux on Aurora</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 20 Jun 2020 16:49:45 +0800</lastBuildDate><atom:link href="https://ryanrexhuang.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>centos yum</title>
+      <link>https://ryanrexhuang.github.io/it/centosyum/</link>
+      <pubDate>Sat, 20 Jun 2020 16:49:45 +0800</pubDate>
+      
+      <guid>https://ryanrexhuang.github.io/it/centosyum/</guid>
+      <description>yum update更新时不升级指定软件/内核 vi /etc/yum.conf # 在 [main] 的最后添加： exclude=containerd* docker* kube* # exclude= Yum 查看某个软件的依赖关系 yum deplist kubeadm 查看软件版本 yum list kubeadm --showduplicates | sort -r </description>
+    </item>
+    
+    <item>
+      <title>使用nfs做pvc持久卷</title>
+      <link>https://ryanrexhuang.github.io/it/%E4%BD%BF%E7%94%A8nfs%E5%81%9Apvc%E6%8C%81%E4%B9%85%E5%8D%B7/</link>
+      <pubDate>Sat, 20 Jun 2020 16:49:45 +0800</pubDate>
+      
+      <guid>https://ryanrexhuang.github.io/it/%E4%BD%BF%E7%94%A8nfs%E5%81%9Apvc%E6%8C%81%E4%B9%85%E5%8D%B7/</guid>
+      <description>使用nfs做pvc持久卷 安装nfs软件  ps：挑选一台服务器做NFS服务器，NFS服务器和k8s集群都需要安装NFS和RPCBIND，否则k8s集群中机器不能远程挂载，集群不能使用pvc
+ yum -y install nfs-utils rpcbind mkdir -pv /ifs/kubernetes systemctl enable rpcbind systemctl enable nfs vim /etc/exports /ifs/kubernetes *(rw,no_root_squash) exportfs -r mkdir -pv /ifs/kubernetes/{pv00001,pv00002,pv00003} 找一台机子测试一下 mount -t nfs 10.1.1.201:/ifs/kubernetes /mnt/ NFS静态分配pv kubectl apply -f pv.yaml
+apiVersion: v1 kind: PersistentVolume metadata: name: pv00001 spec: capacity: storage: 5Gi accessModes: - ReadWriteMany nfs: path: /ifs/kubernetes/pv00001 server: 10.1.1.201 --- apiVersion: v1 kind: PersistentVolume metadata: name: pv00002 spec: capacity: storage: 10Gi accessModes: - ReadWriteMany nfs: path: /ifs/kubernetes/pv00002 server: 10.</description>
+    </item>
+    
+  </channel>
+</rss>
